@@ -1,0 +1,23 @@
+## CSE 331 hw-setup Questions
+## Part 6
+
+1. Why did Fibonacci fail the testThrowsIllegalArgumentException< test? What (if anything) did
+you have to do to fix it? If you did not have to change anything to fix this issue, explain why.
+
+Because the test class pass in a zero, and Fibonacci throw new exception when n <= 0, when n is 0,
+fibonacci term is actually 1, so I change condition to throw new exception when n < 0.
+
+2. Why did Fibonacci fail the testBaseCase test? What (if anything) did you have to do to fix
+it? If you did not have to change anything to fix this issue, explain why.
+
+Because for index 2, it is suppose to be 1 + 1, because 1, 1, 2(index2), 3, .... and I change
+else statement to be [n-1] + [n-2] instead of minus. Also, only terms on index 0 and 1 value 1,
+so condition in else if should be n <= 1 instead of n <=2.
+
+
+3.Why did Fibonacci fail the testInductiveCase test? What (if anything) did you have to do to
+fix it? If you did not have to change anything to fix this issue, explain why.
+Because it pass in a 0 index, and 0 index should be 1, but it is captured by n <= 0 condition
+and throw an exception, so I change the condition from n <= 0 to n < 0.
+
+

@@ -1,0 +1,155 @@
+## CSE 331 hw-poly Questions
+## Part 0
+###########################################################################
+
+1. Multiplication Pseudocode r = p * q
+    set r = empty polynomial
+    {inv: r = p_0 * q + p1 * q +...+ p_i-1 * q}
+    foreach term, t_pi in p:
+        {inv: r = (p_0 * q +...+ p_i-2 * q) + p_i-1 * (q0 +...+q_j-1)}
+        foreach term, t_qj in q:
+            r = r + t_pi * t_qj
+    return r
+
+
+
+
+2. Division Pseudocode r = p / q
+rm = remainder after each subtraction
+mdegree() = max degree in this polynomial
+mcoef() = coefficient of max degree term in this polynomial
+
+    set r = empty polynomial, rm = p
+    {inv: p = rm + r * q}
+    while mdegree(rm) >= mdegree(q) && rm != 0:
+        t_r = a term with mcoef(rm) / mcoef(q) and mdegree(rm) - mdegree(q)
+        r = r + t_r
+        rm = rm - q * t_r
+    return r
+
+
+
+
+3. Division Example: (x3+x-1) / (x+1) = x2-x+2
+p = x^3 + x - 1
+q = x + 1
+rm = p
+r = 0
+while mdegree(rm) >= mdegree(q) && rm != 0
+    Iteration 1: rm = x^3 + x - 1, q = x + 1, p = x^3 + x - 1, r = 0
+        {inv: x^3 + x - 1 = x^3 + x - 1 + (x + 1) * 0}
+        [t_r = a term with mcoef(rm) / mcoef(q) and mdegree(rm) - mdegree(q)]t_r = (1/1)x^(3-1) = x^2
+        [r = r + t_r]r = 0 + x^2
+        [rm = rm - q * t_r]x^3 + x - 1 - (x + 1) * (x^2) = x^3 + x - 1 - x^3 - x^2 = -x^2 + x - 1
+        {inv: x^3 + x - 1 = -x^2 + x - 1 + (x + 1) * x^2}
+
+    Iteration 2: rm = -x^2 + x - 1, q = x + 1, p = x^3 + x - 1, r = x^2
+        {inv: x^3 + x - 1 = -x^2 + x - 1 + (x + 1) * x^2}
+        [t_r = a term with mcoef(rm) / mcoef(q) and mdegree(rm) - mdegree(q)]t_r = (-1/1)x^(2-1) = -x
+        [r = r + t_r]r = x^2 - x
+        [rm = rm - q * t_r]-x^2 + x - 1 - (x + 1) * -x = -x^2 + x - 1 + x^2 + x = 2x - 1
+        {inv: x^3 + x - 1 = 2x - 1 + (x + 1) * (x^2 - x))}
+
+    Iteration 3: rm = 2x - 1, q = x + 1, p = x^3 + x - 1, r = x^2 - x
+        {inv: x^3 + x - 1 = 2x - 1 + (x + 1) * (x^2 - x))}
+        [t_r = a term with mcoef(rm) / mcoef(q) and mdegree(rm) - mdegree(q)]t_r = (2/1)x^(1-1) = 2
+        [r = r + t_r]r = x^2 - x + 2
+        [rm = rm - q * t_r]2x - 1 - (x + 1) * 2 = 2x - 1 - 2x - 2 = -3
+        {inv: x^3 + x - 1 = -3 + (x + 1) * (x^2 - x + 2))}
+
+[mdegree(rm) < mdegree(q)]
+
+Finish! r = x^2 - x + 2
+
+
+
+## Part 1
+###########################################################################
+
+1. Weakened Rep Invariant
+RatNum Constructor(int n, int d): Only need to check if denom is non-negative, assign value to denom and numer without reducing form
+ADV: Less code, which will increase efficiency
+DISADV: ToString will be less efficient because it needs to do reduce form
+
+checkRep: Only need to check if denom is non-negative.
+ADV: Less code
+DISADV: Nothing
+
+toString: if our RatNum is not NaN, reduce it to reduced form before returning.
+ADV: equals, hashcode and toString are only three methods need to use reduced form, so reducing form here will increase overall runtime
+DISADV: More code, which will have a lower efficiency for toString.
+
+equals: we need to transform rational number to reduced forms before comparing them
+ADV: equals, hashcode and toString are only three methods need to use reduced form, so reducing form here will increase overall runtime
+DISADV: More code, which will have a lower efficiency for equals.
+
+hashCode: we need to transform rational number to reduced forms so that rational number with the same value will return the same hashcode
+ADV: equals, hashcode and toString are only three methods need to use reduced form, so reducing form here will increase overall runtime
+DISADV: More code, which will have a lower efficiency for hashCode.
+
+2. Alternate add, sub, mul, div
+This violate class specification where it says RatNum represents an immutable rational number, with this change,
+we are having a rep exposure!!
+
+
+3. Constructor checkReps
+According to class spec, RatNum is an immutable class, our fields are private final, and it provides no way changing our fields, so we don't
+need to call checkRep besides in constructors.
+
+
+
+## Part 2
+###########################################################################
+
+1. Calls to checkRep in RatTerm
+I call checkRap only at the end of constructor, according to class spec RatTerm is an immutable class, our private final fields
+can't be changed in other methods.
+
+
+2. Weakened Rep Invariant
+RatTerm constructor: Don't need to set expt to 0 when coefficient is 0
+ADV: Less code in constructor, more efficient
+DISADV: Many other methods will need to have more code if we don't do this
+
+checkRep: Don't need to check if coefficient and expt are both 0
+ADV: Less code, more efficient
+DISADV: Nothing
+DISADV: Nothing
+
+
+add, sub, div: need to do operations on expt
+ADV: Only 3 methods need to add code, overall efficiency might increase
+DISADV: Have to do more operations on expt when we have a zero term, less efficient in three methods
+
+3. Alternate Rep Invariant
+constructor: if a NaN coefficient passed in, make expt == 0
+ADV: Nothing
+DISADV: More code, less efficient
+
+checkRep: check if a NaN coefficient has expt == 0
+ADV: Nothing
+DISADV: More code, less efficient
+
+isNaN: check if a term with NaN coefficient has expt == 0
+ADV: Nothing
+DISADV: More code, less efficient
+
+
+
+## Part 3
+###########################################################################
+
+1. Calls to checkRep in RatPoly
+I call checkRep at the end of constructors with parameters. According to class spec, RatPoly is an immutable class
+with private final fields. Other methods can't change fields in RatPoly.
+
+2. Alternate Representation
+ADV: We actually don't need PolyTerm class anymore.
+DISADV: For many methods in RatPoly we need to do operations to terms,
+then we have to get elements from two lists and combine them.
+
+I think using only term list is better because we can have less operations in our RatPoly class and with less
+opportunities to make mistake.
+
+
+
